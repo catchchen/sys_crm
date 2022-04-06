@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.mapper.UserMapper">
+    <select id="selectUserByUsernameAndPassword" resultType="com.company.entity.User">
+        select * from user where username = #{username} and password = #{password}
+    </select>
+
+<!--  如果 没有 VO 一对多  多对一  -->
+
+    <select id="selectUsers" resultType="com.company.vo.UserVO">
+        select
+            u.uid,u.username,u.email,u.phone,u.did,d.dept_name
+        from user u
+            left join dept d on u.did = d.did
+        <where>
+            u.status = 1
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="did != null">
+                and u.did = #{did}
+            </if>
+        </where>
+    </select>
+
+    <update id="deleteUserByUid" >
+        update user set status = 0 where uid = #{uid}
+    </update>
+
+    <insert id="insertUser" >
+        insert into user values (null,#{username},#{password},#{email},#{phone},#{did},#{createTime},#{updateTime},'1')
+    </insert>
+
+    <select id="selectUserByUid" resultType="com.company.entity.User">
+        select * from user where uid = #{uid}
+    </select>
+
+    <update id="updateUser">
+        update user
+        set
+            username = #{username},
+            email = #{email},
+            phone = #{phone},
+            did=#{did},
+            update_time=#{updateTime}
+        where uid = #{uid}
+    </update>
+
+    <update id="updateUserPassword">
+        update user
+        set password = #{newPassword} where uid = #{uid}
+    </update>
+</mapper>

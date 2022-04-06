@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.mapper.ProductMapper">
+    <insert id="insertProduct">
+        insert into product
+        values(#{pid},#{cid},#{title},#{price},#{specification},#{img},#{stock},#{desc},1,#{createTime},#{updateTime})
+    </insert>
+
+    <select id="selectProductByPid" resultType="com.company.entity.Product">
+        select * from product
+        where pid = #{pid}
+    </select>
+    <select id="selectProducts" resultType="com.company.vo.ProductVO">
+        select p.pid,c.cate_name,p.title,p.price,p.specification,p.img,p.stock,p.`desc`,p.create_time
+        from product p
+            left join category c
+                on p.cid = c.cid
+                where
+                      p.status = 1
+            <if test="title != null and title != ''">
+                and p.title like '%${title}%'
+            </if>
+            <if test="cateName != null and cateName != ''" >
+                and c.cate_name = #{cateName}
+            </if>
+            <if test="price != null">
+                and p.price > #{price}
+            </if>
+    </select>
+<!--    #{} 传递一个参参数 可以随便 多个参数 需要加注解才行 -->
+    <update id="deleteProductByPid">
+        update product set status = 0 where pid = #{pid}
+    </update>
+
+    <update id="updateProduct">
+        update
+            product
+        set title = #{title},price = #{price},`specification` = #{specification},stock = #{stock},
+            `desc` = #{desc},create_time = #{createTime},update_time = #{updateTime}
+        where pid = #{pid}
+    </update>
+</mapper>
